@@ -89,11 +89,11 @@ if page == pages[0] :
         '''
         st.markdown(modalites)
 
-  with st.expander("Données ADEME"):
-        ademe_choice = '''
-        L‘illustration suivante permet de se rendre compte de la qualité macro des données ADEME.
-        ![test](https://github.com/mogdan/Datascientest_CO2/blob/main/streamlit_assets/ademe_raw.png?raw=true)
+  with st.expander("Données ADEME"):      
+        st.markdown("L‘illustration suivante permet de se rendre compte de la qualité macro des données ADEME :")
+        st.image("https://github.com/mogdan/Datascientest_CO2/blob/main/streamlit_assets/ademe_raw.png?raw=true", use_column_width=True)
 
+        ademe_choice = '''
         Pour chaque fichier est indiqué :
         -	Le nb de lignes
         -	Le nb / titres des colonnes
@@ -103,9 +103,36 @@ if page == pages[0] :
         -	**Niveau complétude** : pour certaines années il manque de la donnée (2004). Il y a également des très fortes disparités du nombre d’entrées entre les années
 
         '''
-        st.markdown(modalites)
+        st.markdown(ademe_choice)
 
+  with st.expander("Données UE"):      
+        st.markdown("Au niveau des données UE, nous constatons rapidement que nous sommes sur un set de données déjà standardisées sur le périmètre européen de 2010 à 2023. ")
+        st.image("https://github.com/mogdan/Datascientest_CO2/blob/main/streamlit_assets/ue_raw.png?raw=true", use_column_width="auto")
         
+        ue_choice = '''
+        Notre analyse est alors la suivante :
+        -	**Niveau cohérence** : les données sont déjà standardisées dans un même format
+        -	**Niveau complétude** : il y a également sur ce set de données des écarts importants sur les enregistrements entre certaines années
+        -	**Niveau actualité** : ces données semblent être à jour
+        '''
+        st.markdown(ue_choice)
+
+  st.markdown("# :grey[Conclusion de l'analyse exploratoire]")
+
+  with st.expander("Choix des données"):      
+        st.markdown("Au vu de la disparité des données sur les fichiers ADEME et de leur ancienneté, nous avons décidé de nous concentrer sur les :green[**données UE.**] ")
+  
+  with st.expander("Choix de la période d'observation"):      
+        period_choice = '''
+        :green[**Cette étape a pour enjeu de nous permettre de sélectionner la plage de données sur laquelle va s’appuyer notre modèle.**]
+        
+        Pour notre étude, nous avons choisi la période « 2017 – 2022 ».
+        -	Notre 1ère intention fut de garder l’année 2015 pour permettre une analyse comparative données UE / ADEME. Cependant le faible volume de données a exclu ce choix par la suite
+        -	Les données relatives aux années 2010 à 2014 ont également été exclues du fait du faible volume de données
+        -	L’année 2023 a également été exclue car elle représente des données non finalisées
+        '''
+        st.markdown(period_choice)
+             
 
 # Préparation des données
 if page == pages[1] : 
