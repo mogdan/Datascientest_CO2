@@ -5,12 +5,12 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # titre du site
-st.set_page_config(layout='wide', page_icon='static/green_co2_logo2.png')
+st.set_page_config(layout='wide', page_icon='https://github.com/mogdan/Datascientest_CO2/blob/main/streamlit_assets/Green_co2_logo2.png?raw=true')
 col1, col2, col3 = st.columns([1, 10, 1])
 col2.title(":blue[Etude sur les émissions de CO₂ des véhicules particuliers]")
 
 # menu gauche de navigation
-st.sidebar.image('static/Car_co2_light.png', use_column_width=True)
+st.sidebar.image("https://github.com/mogdan/Datascientest_CO2/blob/main/streamlit_assets/green_co2_light.png?raw=true", use_column_width=True)
 st.sidebar.title("Sommaire")
 # accès aux pages du site
 pages=["1 - Exploration", "2 - Data Preparation", "3 - Modélisation"]
@@ -85,7 +85,7 @@ if page == pages[0]:
 
   with st.expander("Données ADEME"):      
         st.markdown("L‘illustration suivante permet de se rendre compte de la qualité macro des données ADEME :")
-        st.image("https://github.com/mogdan/Datascientest_CO2/blob/main/Final/Static/ademe_raw.png?raw=true", use_column_width=True)
+        st.image("https://github.com/mogdan/Datascientest_CO2/blob/main/streamlit_assets/ademe_raw.png?raw=true", use_column_width=True)
 
         ademe_choice = '''
         Pour chaque fichier est indiqué :
@@ -101,7 +101,7 @@ if page == pages[0]:
 
   with st.expander("Données UE"):      
         st.markdown("Au niveau des données UE, nous constatons rapidement que nous sommes sur un set de données déjà standardisées sur le périmètre européen de 2010 à 2023. ")
-        st.image("https://github.com/mogdan/Datascientest_CO2/blob/main/Final/Static/ue_raw.png?raw=true", use_column_width="auto")
+        st.image("https://github.com/mogdan/Datascientest_CO2/blob/main/streamlit_assets/ue_raw.png?raw=true", use_column_width="auto")
         
         ue_choice = '''
         Notre analyse est alors la suivante :
