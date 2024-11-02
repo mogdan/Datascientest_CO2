@@ -117,7 +117,7 @@ if page == pages[0] :
         '''
         st.markdown(ue_choice)
 
-  st.markdown("# :grey[Conclusion de l'analyse exploratoire]")
+  st.markdown("# :grey[Conclusion Analyse Exploratoire]")
 
   with st.expander("Choix des données"):      
         st.markdown("Au vu de la disparité des données sur les fichiers ADEME et de leur ancienneté, nous avons décidé de nous concentrer sur les :green[**données UE.**] ")
