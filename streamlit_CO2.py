@@ -1,30 +1,24 @@
-# cd C:\Dev_Projects\Datascientest_CO2\Datascientest_CO2
-# streamlit run streamlit_CO2.py
-
-
 import streamlit as st
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
 
-# Trame du site 
+# titre du site
+st.set_page_config(layout='wide', page_icon='static/green_co2_logo2.png')
+col1, col2, col3 = st.columns([1, 10, 1])
+col2.title(":blue[Etude sur les émissions de CO₂ des véhicules particuliers]")
 
-# Titre & Sidebar
-url_image_CO2="https://github.com/mogdan/Datascientest_CO2/blob/main/streamlit_assets/CO2.png?raw=true"
-st.sidebar.image(url_image_CO2, use_column_width=True)
-st.title(":green[Etude sur les émissions de CO2 des Véhicules Particuliers]")
+# menu gauche de navigation
+st.sidebar.image('static/Car_co2_light.png', use_column_width=True)
+st.sidebar.title("Sommaire")
+# accès aux pages du site
+pages=["1 - Exploration", "2 - Data Preparation", "3 - Modélisation"]
+page=st.sidebar.radio("Aller vers la page :", pages)
 
-st.sidebar.title(":green[Sommaire]")
-pages=["Introduction", "Préparation des Données", "Entraînement des Modèles", "Conclusion de l'étude", "Prédictions"]
-page=st.sidebar.radio("Aller vers", pages)
-
-st.sidebar.title(":green[Auteurs]")
-st.sidebar.markdown("📧 [Olivier BAUDOIN](mailto:baud43@gmail.com)")
-st.sidebar.markdown("📧 [Yulia HADDAOU](mailto:yuliahaddadou@yahoo.fr)")
-st.sidebar.markdown("📧 [Etienne PETIT](mailto:e.petit16@gmail.com)")
-st.sidebar.markdown("📧 [Daniel PHAN](mailto:phan_daniel@ymail.com)")
-
-# Introduction & Sources de données
-if page == pages[0] : 
+# contenu de la page sélectionnée
+if page == pages[0]: 
+  st.header('1 - Exploration des datasets', divider=True)
   st.markdown("# :grey[Prise en main du sujet]")
 
   with st.expander("Problématique"):
@@ -91,7 +85,7 @@ if page == pages[0] :
 
   with st.expander("Données ADEME"):      
         st.markdown("L‘illustration suivante permet de se rendre compte de la qualité macro des données ADEME :")
-        st.image("https://github.com/mogdan/Datascientest_CO2/blob/main/streamlit_assets/ademe_raw.png?raw=true", use_column_width=True)
+        st.image("https://github.com/mogdan/Datascientest_CO2/blob/main/Final/Static/ademe_raw.png?raw=true", use_column_width=True)
 
         ademe_choice = '''
         Pour chaque fichier est indiqué :
@@ -107,7 +101,7 @@ if page == pages[0] :
 
   with st.expander("Données UE"):      
         st.markdown("Au niveau des données UE, nous constatons rapidement que nous sommes sur un set de données déjà standardisées sur le périmètre européen de 2010 à 2023. ")
-        st.image("https://github.com/mogdan/Datascientest_CO2/blob/main/streamlit_assets/ue_raw.png?raw=true", use_column_width="auto")
+        st.image("https://github.com/mogdan/Datascientest_CO2/blob/main/Final/Static/ue_raw.png?raw=true", use_column_width="auto")
         
         ue_choice = '''
         Notre analyse est alors la suivante :
@@ -132,20 +126,12 @@ if page == pages[0] :
         -	L’année 2023 a également été exclue car elle représente des données non finalisées
         '''
         st.markdown(period_choice)
-             
 
-# Préparation des données
-if page == pages[1] : 
-  st.write("### :grey[Préparation des données]")
+  
 
-# Entraînement des modèles
-if page == pages[2] : 
-  st.write("### :grey[Entraînement des modèles]")
+elif page == pages[1]:
+  st.header('2 - Nettoyage et sélection des données', divider=True)
 
-# Conclusion
-if page == pages[3] : 
-  st.write("### :grey[Conclusion]")
+else:
+  st.header('3 - Modélisation', divider=True)
 
-# Prédictions
-if page == pages[4] : 
-  st.write("### :grey[Prédictions]")
