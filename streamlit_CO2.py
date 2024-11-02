@@ -11,7 +11,7 @@ import seaborn as sns
 # Trame du site 
 
 # Titre & Sidebar
-st.sidebar.image("C:\Dev_Projects\Datascientest_CO2\streamlit_assets/CO2.png", use_column_width=True)
+# st.sidebar.image("C:\Dev_Projects\Datascientest_CO2\streamlit_assets/CO2.png", use_column_width=True)
 st.title(":green[Etude sur les émissions de CO2 des Véhicules Particuliers]")
 
 st.sidebar.title(":green[Sommaire]")
