@@ -5,12 +5,12 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # titre du site
-st.set_page_config(layout='wide', page_icon='https://github.com/mogdan/Datascientest_CO2/blob/main/streamlit_assets/Green_co2_logo2.png?raw=true')
+st.set_page_config(layout='wide', page_icon="https://github.com/mogdan/Datascientest_CO2/blob/main/streamlit_assets/Green_co2_logo2.png?raw=true")
 col1, col2, col3 = st.columns([1, 10, 1])
 col2.title(":blue[Etude sur les émissions de CO₂ des véhicules particuliers]")
 
 # menu gauche de navigation
-st.sidebar.image("https://github.com/mogdan/Datascientest_CO2/blob/main/streamlit_assets/green_co2_light.png?raw=true", use_column_width=True)
+st.sidebar.image("https://github.com/mogdan/Datascientest_CO2/blob/main/streamlit_assets/Car_co2_light.png?raw=true", use_column_width=True)
 st.sidebar.title("Sommaire")
 # accès aux pages du site
 pages=["1 - Exploration", "2 - Data Preparation", "3 - Modélisation"]
