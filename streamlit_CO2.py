@@ -12,7 +12,7 @@ col2.title(":blue[Etude sur les émissions de CO₂ des véhicules particuliers]
 st.sidebar.image("https://github.com/mogdan/Datascientest_CO2/blob/main/streamlit_assets/Car_co2_light.png?raw=true", use_column_width=True)
 st.sidebar.title("Sommaire")
 # accès aux pages du site
-pages=["1 - Exploration", "2 - Data Preparation", "3 - Modélisation"]
+pages=["1 - Exploration", "2 - Data Preparation", "3 - Modélisation", "4 - Conclusion"]
 page=st.sidebar.radio("Aller vers la page :", pages)
 
 # contenu de la page sélectionnée
@@ -126,11 +126,13 @@ if page == pages[0]:
         '''
         st.markdown(period_choice)
 
-  
 
 elif page == pages[1]:
   st.header('2 - Nettoyage et sélection des données', divider=True)
-
-else:
+  
+elif page == pages[2]:
   st.header('3 - Modélisation', divider=True)
+  
+else:
+  st.header('4 - Conclusion', divider=True)
 
