@@ -6,7 +6,7 @@ import numpy as np
 # titre du site
 st.set_page_config(layout='wide', page_icon="https://github.com/mogdan/Datascientest_CO2/blob/main/streamlit_assets/Green_co2_logo2.png?raw=true")
 col1, col2, col3 = st.columns([1, 10, 1])
-col2.title(":blue[Etude sur les émissions de CO₂ des véhicules particuliers]")
+col2.title(":blue[Etude sur les émissions de CO₂ des véhicules particulierss]")
 
 # menu gauche de navigation
 st.sidebar.image("https://github.com/mogdan/Datascientest_CO2/blob/main/streamlit_assets/Car_co2_light.png?raw=true", use_column_width=True)
