@@ -12,7 +12,7 @@ col2.title(":blue[Etude sur les émissions de CO₂ des véhicules particuliers]
 st.sidebar.image("https://github.com/mogdan/Datascientest_CO2/blob/main/streamlit_assets/Car_co2_light.png?raw=true", use_column_width=True)
 st.sidebar.title("Sommaire")
 # accès aux pages du site
-pages=["1 - Exploration", "2 - Data Preparation", "3 - Modélisation"]
+pages=["1 - Exploration", "2 - Data Preparation", "3 - Modélisation", "4 - Conclusion"]
 page=st.sidebar.radio("Aller vers la page :", pages)
 
 # contenu de la page sélectionnée
@@ -131,6 +131,156 @@ if page == pages[0]:
 elif page == pages[1]:
   st.header('2 - Nettoyage et sélection des données', divider=True)
 
-else:
+elif page == pages[2]:
   st.header('3 - Modélisation', divider=True)
 
+elif page == pages[3]:
+  st.header('4 - Conclusion', divider=True)
+  st.markdown("""
+              Pour conclure notre étude sur les émission de CO2 des véhicules, plusieurs points clés émergent:
+              - **Données limitées** : Nous avons exploitéles données disponibles depuis 2015, mais leur recul est restreint.
+              - **Surreprésentation des véhicules thermiques** : Notre jeu de données est largement composé de vehicules essence et diesel, ce qui reflète la forte présence de ces motorisation sur les routes.
+              - **Variables influentes pour le rejet de CO2** : Le dimensionnement du véhicules( poids, taille de la cylindrée) et les spécifications du moteur se sont avérés plus significatifs pour prédire les émissions de CO2.
+  """)
+  st.subheader("Tableau des Perspectives d'Amélioration")
+  # Créer les colonnes pour structurer le tableau
+  col1, col2 = st.columns([1, 2])
+  # Ajouter le contenu dans chaque colonne
+  with col1:
+    st.subheader("Domaine")
+    st.write("1. Standardisation des mesures")
+    st.write("2. Modèles d'apprentissage")
+    st.write("3. Étude sur les conditions")
+  with col2:
+    st.subheader("Piste d'amélioration")
+    st.write("1. Uniformiser les données d'émission de CO₂ pour toutes les marques, y compris les véhicules plus récents.")
+    st.write("2. Utiliser des modèles avancés avec optimisation des hyperparamètres pour améliorer la précision.")
+    st.write("3. Intégrer des données sur les conditions de circulation (rurale, urbaine, mixte) pour affiner les prédictions.")
+ 
+  import pandas as pd
+  from sklearn.preprocessing import StandardScaler
+  from sklearn.decomposition import PCA
+  from sklearn.cluster import KMeans
+  from sklearn.neighbors import KNeighborsRegressor
+  from sklearn.model_selection import train_test_split
+  import joblib
+  import streamlit as st
+
+
+  # Chargement du dataset
+  df = pd.read_csv(r'C:\Users\Maison\Desktop\Dataset_Rendu2_cleaned.csv')
+
+  # Liste des colonnes catégorielles
+  col_cat = ['Type_approval_number', 'Type', 'Variant', 'Make', 'Commercial_name', 'Category_vehicle_type_approved', 'Fuel_mode', 'Fuel_type'] 
+
+  # Application de l'encodage fréquentiel pour chaque colonne catégorielle
+  for col in col_cat:
+    freq_encoding = df[col].value_counts() / len(df)
+    df[col] = df[col].map(freq_encoding)
+
+  # Sélection des variables explicatives (X) et de la variable cible (Y)
+  Y = df['CO2_Emissions']
+  X = df.drop(['CO2_Emissions'], axis=1)
+
+  # Standardisation des données
+  scaler = StandardScaler()
+  X_norm = pd.DataFrame(scaler.fit_transform(X), columns=X.columns)
+
+  # Clustering avec KMeans (optionnel, pour clustering visuel)
+  kmeans_model = KMeans(n_clusters=5, random_state=42)
+  X_norm['cluster'] = kmeans_model.fit_predict(X_norm)
+
+  # Réduction dimensionnelle avec PCA
+  pca = PCA(n_components=2)
+  principalComponents = pca.fit_transform(X_norm.drop('cluster', axis=1))
+
+  # Combinaison PCA et KMeans dans un DataFrame
+  X_combined = pd.DataFrame(data=principalComponents, columns=['Component 1', 'Component 2'])
+  X_combined['Cluster'] = X_norm['cluster']
+
+  # Division en ensembles d'entraînement et de test
+  X_train, X_test, Y_train, Y_test = train_test_split(X_combined[['Component 1', 'Component 2']], Y, test_size=0.2, random_state=42)
+
+  # Entraînement du modèle KNN
+  knn = KNeighborsRegressor(n_neighbors=4)
+  knn.fit(X_train, Y_train)
+
+  # Sauvegarde du modèle KNN et PCA avec joblib
+  joblib.dump(knn, 'model_knn.joblib')
+  joblib.dump(scaler, 'scaler.joblib')
+  joblib.dump(pca, 'pca.joblib')
+
+  # Chargement des modèles KNN et transformateurs (scaler et PCA)
+  model_knn = joblib.load('model_knn.joblib')
+  scaler = joblib.load('scaler.joblib')
+  pca = joblib.load('pca.joblib')
+
+
+  # Titre de l'application
+  st.title("Application de calcul des émissions de CO2")
+  st.header("Calculateur d'empreinte carbone pour les véhicules")
+
+  # Choix du pays (simplifié ici avec un seul exemple)
+  emission_factors = {"France": {"transportation": 28.7}}
+  st.subheader("Votre pays")
+  country = st.selectbox("Sélectionnez votre pays", ["France"])
+
+  # Mise en page avec colonnes
+  col1, col2, col3 = st.columns(3)
+
+  # Distance parcourue
+  with col1:
+    st.subheader("🚗Distance parcourue quotidienne (en km)")
+    daily_distance = st.slider("Distance", 0.0, 100.0, 10.0)
+    yearly_distance = daily_distance * 365  # Conversion en distance annuelle
+
+  # Type de carburant
+  with col2:
+    st.subheader("⛽Type de carburant")
+    fuel_type = st.selectbox("Carburant", ["PETROL", "DIESEL", "LPG", "PETROL/ELECTRIC", "DIESEL/ELECTRIC", 'NG', 'E85', 'NG-BIOMETHANE'])
+
+  # Cylindrée du moteur
+  with col3:
+    st.subheader( "🏎️💨Taille de la cylindrée (en L)")
+    engine_capacity = st.slider("Cylindrée", 0.0, 10.0, 1.6)
+
+  # Année de construction
+  reporting_year = st.number_input("📅Année de référence pour la prédiction", min_value=2017, max_value=2022, step=1)
+
+  # Encodage fréquentiel pour le type de carburant
+  fuel_type_freq = df['Fuel_type'].value_counts() / len(df)
+  fuel_type_encoded = fuel_type_freq.get(fuel_type, 0)  # Par défaut, valeur de fréquence zéro si absent
+
+  # Calcul des émissions
+  if st.button("Calculer les émissions de CO2"):
+    # Créer une liste de caractéristiques avec valeurs par défaut pour celles qui manquent
+    prediction_input = [reporting_year, yearly_distance, engine_capacity, fuel_type_encoded]
+    
+    # Ajouter des valeurs par défaut (0) pour les caractéristiques manquantes
+    # Supposons que le modèle a été entraîné avec 14 caractéristiques
+    nombre_caracteristiques_attendues = 14
+    if len(prediction_input) < nombre_caracteristiques_attendues:
+        prediction_input += [0] * (nombre_caracteristiques_attendues - len(prediction_input))
+
+    # Restructurer en tableau 2D pour l'entrée du scaler
+    prediction_input = [prediction_input]  # Encapsuler dans une liste pour former un tableau 2D
+
+    # Appliquer les transformations
+    prediction_input_scaled = scaler.transform(prediction_input)  # Maintenant, prediction_input est un tableau 2D
+    prediction_input_pca = pca.transform(prediction_input_scaled)
+
+    # Prédiction des émissions
+    CO2_emission = model_knn.predict(prediction_input_pca)[0]
+    CO2_emission = round(CO2_emission, 2)
+
+    # Affichage des résultats
+    st.header("Résultats")
+    st.info(f"Émissions estimées pour {yearly_distance} km par an : {CO2_emission} tonnes de CO2 par an")
+
+    # Empreinte carbone totale
+    with col3:
+        st.subheader("Empreinte carbone totale")
+        st.info(f"Total des émissions : {CO2_emission} tonnes de CO2 par an")
+
+  # Affichage de la limite moyenne par habitant
+  st.warning("La limite maximale moyenne est de 282,963 tonnes de CO2 par habitant")
