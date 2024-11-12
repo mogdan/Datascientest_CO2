@@ -12,7 +12,7 @@ col2.title(":blue[Etude sur les émissions de CO₂ des véhicules particuliers]
 st.sidebar.image("https://github.com/mogdan/Datascientest_CO2/blob/main/streamlit_assets/Car_co2_light.png?raw=true", use_column_width=True)
 st.sidebar.title("Sommaire")
 # accès aux pages du site
-pages=["1 - Exploration", "2 - Data Preparation", "3 - Modélisation", "4 - Conclusion"]
+pages=["1 - Analyse exploratoire ", "2 - Data Preparation", "3 - Modélisation", "4 - Conclusion"]
 page=st.sidebar.radio("Aller vers la page :", pages)
 
 # contenu de la page sélectionnée
@@ -110,6 +110,82 @@ if page == pages[0]:
         '''
         st.markdown(ue_choice)
 
+  st.markdown("# :grey[Consolidation des données]")
+
+  with st.expander("Corrélation des données"):      
+        st.markdown("Pour commencer le travail exploratoire, nous avons décidé de faire un heatmap pour regarder les corrélations entre les valeurs numériques. Pou_r se faire, nous avons choisi de remplacer les NaN par la moyenne dans chaque variable.")
+        st.image("https://github.com/mogdan/Datascientest_CO2/blob/main/streamlit_assets/Heatmap.png?raw=true", use_column_width="auto")
+        
+        corr_model = '''
+        Sur ce graphique, 3 corrélations supérieures à 80% peuvent être observées :
+        -	**Mt avec m (kg)** : ces 2 variables représentent le poids des véhicules. Il est donc logique qu’elles soient corrélées.
+        -	**Enedc (g/km) avec Ewltp (g/km)** : Ces 2 variables représentent les émissions de CO2 calculées avec des normes différentes. Il y a forte corrélation entre les deux ce qu’il s’avère plutôt logique.
+        -	**M (kg) avec At2 (mm)** : La variable At2 représente la distance entre les 2 roues AV ou AR d’un véhicule, tout comme l’At1 d’ailleurs. Après une rapide analyse, on remarque que la variable At2 avait plus de NaN que sa consœur et que notre remplacement par la moyenne ait pu avoir des effets de bord.
+        '''
+        st.markdown(corr_model)
+
+  with st.expander("Analyses des critères ENEDC / EWLTP"):  
+        critere = '''
+        Ayant observé une corrélation suffisante entre ces 2 critères décrivant les émissions de CO2, nous nous sommes penchés sur l’analyse comparative de ces 2 critères :
+        -	**NEDC** signifiant « New European Driving Cycle » ou « Nouveau Cycle de Conduite Européen », c’est une norme d’homologation des véhicules neufs introduite en 1997 en Europe et qui a eu cours jusqu'en septembre 2017. La norme va définir les conditions dans lesquelles un modèle est testé, allant de la vitesse à la température, avec un avantage : tous les véhicules suivent le même protocole.
+        -	**WLTP** (Worldwide Harmonized Light Vehicles Test Procedure) pour tout nouveau modèle à partir du 1er septembre 2017. Il concerne tous les véhicules neufs au 1er septembre 2018, et jusqu’aux véhicules en stock homologués NEDC et vendus après le 1er septembre 2019.
+        '''
+        st.markdown(critere)
+        st.image("https://github.com/mogdan/Datascientest_CO2/blob/main/streamlit_assets/Comparaison ENEDC-EWLTP par an.png?raw=true", use_column_width="auto")
+        
+        critere1 = '''
+        Grâce à cette analyse, c'est à cette étape que nous avons choisi d'exclure les années 2015 et 2016 dans la suite de notre étude à cause du faible nombre de données.
+        
+        Sur les autres années, notre analyse a été la suivante :
+        -	En 2017 et 2018, nous avons des données ENEDC et peu voire pas de données EWLTP
+        -	En revanche cette tendance qui s’inverse à partir 2021 où les données ENEDC sont majoritairement absentes.
+        -	Durant la période 2019 – 2020, il y a coexistence des données sur ces 2 types de mesures.
+
+        Pour pousser notre analyse d'un cran supplémentaire, nous nous sommes concentrés sur l'année 2020 où nous avons des données complètes sur les 2 critères. 
+        '''
+        st.markdown(critere1)
+        st.image("https://github.com/mogdan/Datascientest_CO2/blob/main/streamlit_assets/Boxplot - comparasion 2020 ENEDC-EWLTP.png?raw=true", use_column_width="auto")
+        critere2 = '''
+        Ce que nous avons voulu mettre en évidence ici est la médiane des émissions par type de carburant et par norme (Enedc puis Ewltp), et la différence par type de carburant.
+
+        :green[**Conclusion** : grâce à ce graphique, npous pouvons confirmer que les émissions calculées avec la norme NEDC sont plus faibles qu’avec la norme WLTP.]
+
+        '''
+        st.markdown(critere2)
+
+  with st.expander("Analyses de la distribution par type de carburant"):  
+        distrib = '''
+        Pour continuer notre travail exploratoire, nous avons regardé le nombre de véhicules par type de carburant sur ce jeu de données.
+        '''
+        st.markdown(distrib)
+        st.image("https://github.com/mogdan/Datascientest_CO2/blob/main/streamlit_assets/Nb véhicules par type de carburant.png?raw=true", use_column_width="auto")
+        
+        distrib1 = '''
+        :green[Nous observons ainsi une grande prédominance des voitures Essence et Diesel dans nos données.]
+        
+        Pour compléter ce graphique, il nous a semblé intéressant d’observer l’évolution dans le temps pour chaque carburant :
+        '''
+        st.markdown(distrib1)
+        st.image("https://github.com/mogdan/Datascientest_CO2/blob/main/streamlit_assets/Nb véhicules par type de carburant et par an.png?raw=true", use_column_width="auto")
+        distrib2 = '''
+        
+        :green[Nous observons une diminution progressive des immatriculations pour les voitures Essence / Diésel ces dernières années et une augmentation progressive des voitures électriques à partir de 2019. Cependant, ces graphiques ne permettent pas d’observer de causes conjoncturelles ou structurelles pour ces tendances.]
+
+        Pour aller plus loin, on s'est intéressé à la distribution par type de carburant et la taille de cylindrée pour voir comment sont répartis les véhicules.
+        Pour cela, nous avons fait un travail préalable sur la variable **ec (cm3)** où nous avons remplacé les NaN par la médiane calculée
+
+        '''
+        st.markdown(distrib2)
+        st.image("https://github.com/mogdan/Datascientest_CO2/blob/main/streamlit_assets/Distribution par type de carburant et taille de cylindrée.png?raw=true", use_column_width="auto")
+        
+        distrib3 = '''
+        Nous pouvons voir pour les catégories qui nous intéressent :
+        -	**Essence :** Les véhicules essences sont en général bien équilibrées dans leur répartition, la moyenne se situant quasi au même niveau que la médiane. Il y a toutefois une large dispersion de VA (grosses cylindrées – ex. sport, luxe)
+        -	**Diesel :** la cylindrée est en général plus importante que pour l’homologue en version essence et possède une dispersion plus faible de valeurs aberrantes.
+        '''
+        st.markdown(distrib3)
+
+
   st.markdown("# :grey[Conclusion Analyse Exploratoire]")
 
   with st.expander("Choix des données"):      
@@ -126,6 +202,15 @@ if page == pages[0]:
         '''
         st.markdown(period_choice)
 
+  with st.expander("Choix de la norme pour le calcul des émissions"):      
+        emission_choice = '''
+        Nous avons donc choisi, pour conserver une cohérence temporelle des données d’émissions, de compenser la sous-évaluation des émissions de CO2 par la méthode NEDC en lui ajoutant, pour chaque type de carburant (hors électrique/hydrogène), la médiane de la différence avec les valeurs WLTP mesurée sur 2020.
+        
+        :green[**Dans notre modèle, nous créerons une nouvelle variable nommée ‘Emissions CO2’ qui prendra la valeur de EWLTP quand elle sera présente et la valeur de ENEDC compensée en l’absence de valeur EWLTP.**]
+
+        :green[**Cette variable sera notre variable cible.**]
+        '''
+        st.markdown(emission_choice)
 
 elif page == pages[1]:
   st.header('2 - Nettoyage et sélection des données', divider=True)
