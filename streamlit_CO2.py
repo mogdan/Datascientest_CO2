@@ -239,7 +239,7 @@ elif page == pages[1]:
 
   with st.expander("Variables Country"):
    st.markdown("Nous avons fait le choix pour cette étude de garder seulement :green[**les véhicules immatriculés en France**]")
-   st.code("df=df[(df['Country']=="FR")]")     
+   st.code("df=df[(df['Country']=='FR')]")     
 
   with st.expander("Variables Fuel type (ft)"):
    st.markdown("Les véhicules électriques ou avec un moteur à hydrogène ne dégageant pas d'émissions de CO2, nous les avons exclus du modèle")
@@ -338,7 +338,7 @@ elif page == pages[1]:
                 ''')
     st.code('''
             print("Somme des valeurs manquantes :",df.isna().sum().sum())
-            Somme des valeurs manquantes : 354"
+            Somme des valeurs manquantes : 354
             ''')
     st.markdown("Ce résultat représente 0,15% des données de notre modèle, nous supprimons ces données.")
                 
