@@ -214,7 +214,161 @@ if page == pages[0]:
 
 elif page == pages[1]:
   st.header('2 - Nettoyage et sélection des données', divider=True)
-  
+
+  with st.expander("Etapes de transformation"):  
+   st.markdown('''
+               Voici, en résumé, quelles étapes nous allons procéder afin de préparer les données à la modélisation : 
+               -	Conserver les données entre 2017 et 2022
+               -	Conserver les données FR
+               -  Conserver les véhicules avec énergies carbonnées
+               -	Conserver les champs suivants : 'Tan', 'T', 'Va', 'Mk', 'Cn', 'Ct', 'm (kg)', 'Enedc (g/km)', 'Ewltp (g/km)', 'W (mm)', 'At1 (mm)', 'Ft', 'Fm', 'ec (cm3)', 'ep (KW)', 'year'
+               -	Standardiser la variable 'Mk' (constructeur)
+               -	Standardiser la variable 'Ft' (carburant)
+               -  Supprimer les doublons
+                -	Créer une nouvelle variable 'CO2_Emission' sur la base de 'enedc', 'ewltp' et 'median'
+               -	Supprimer les variables ayant permis de construire CO2_Emission
+               -  Traitement des NaN
+               -	Renommer les titres de colonne pour faciliter la manipulation des données
+               ''')
+   
+  st.markdown("# :grey[Réduction des variables]")
+   
+  with st.expander("Variable Year"):
+   st.markdown("Comme expliqué dans l'analyse exploratoire, :green[**nous devons garder seulement les données entre 2017 et 2022**]")
+   st.code("df=df[(df.year>2016) & (df['year']<2023)]")           
+
+  with st.expander("Variables Country"):
+   st.markdown("Nous avons fait le choix pour cette étude de garder seulement :green[**les véhicules immatriculés en France**]")
+   st.code("df=df[(df['Country']=="FR")]")     
+
+  with st.expander("Variables Fuel type (ft)"):
+   st.markdown("Les véhicules électriques ou avec un moteur à hydrogène ne dégageant pas d'émissions de CO2, nous les avons exclus du modèle")
+   st.code( '''
+            df = df[df['Ft'] != 'ELECTRIC']
+            df = df[df['Ft'] != 'HYDROGEN']
+            ''')       
+   
+  with st.expander("Conservation des variables essentielles"):
+   st.markdown("Le but de notre étude est de montrer les caractéristiques moteurs émettant du CO2. Nous avons gardé seulement les champs pertinents, qui ont peu de NaN")
+   st.markdown('''De plus, une colonne ID est présente dans les données de base, variable que nous avons décidé de supprimer, car nous n'analyserons pas le nombre de véhicules par type de carburant.
+               Cela présentera un avantage non négligeable : :green[**une réduction drastique du volume de données**]''')
+   st.code( '''
+            values_to_keep=['Tan', 'T', 'Va', 'Mk', 'Cn', 'Ct', 'm (kg)', 'Enedc (g/km)', 'Ewltp (g/km)', 'W (mm)', 'At1 (mm)', 'Ft', 'Fm', 'ec (cm3)', 'ep (KW)', 'year']
+            df=df[values_to_keep]
+            ''')       
+  st.markdown("# :grey[Standardisation des variables]")
+  with st.expander("Variable Constructeur (Mk)"):
+   st.markdown("Beaucoup de champs n'étant pas propres sur cette variable, il a fallu nettoyer les données.")
+   st.code( '''
+            df['Mk']= df['Mk'].astype(str)
+            df['Mk']= df['Mk'].apply(lambda x : x.upper())
+            df['Mk'].replace({  'ALPINA':'BMW',
+                    'BMW I':'BMW',
+                    'QUATTRO' : 'AUDI',
+                    'PÃ–SSL' :'PÖSSL',
+                    'P?SSL' : 'PÖSSL',
+                    'ROLLS ROYCE' : 'ROLLS-ROYCE',
+                    'VOLKSWAGEN, VW' : 'VOLKSWAGEN',
+                    'MITSUBISHI MOTORS (THAILAND)' : 'MITSUBISHI',
+                    'MERCEDES-AMG' : 'MERCEDES AMG',
+                    'MERCEDES-BENZ' : 'MERCEDES BENZ',
+                    'MC LAREN' : 'MCLAREN',
+                    'FORD-CNG-TECHNIK' : 'FORD',
+                    'MERCEDES AMG' : 'MERCEDES BENZ',
+                    'HYUNDAI                                           ': 'HYUNDAI',
+                    'RENAULT TECH' : 'RENAULT'
+                 }, inplace=True)
+            ''')       
+  with st.expander("Variable Fuel type (ft)"):
+   st.markdown("Idem pour cette variable.")
+   st.code( '''
+            df['Ft']= df['Ft'].astype(str)
+            df['Ft']= df['Ft'].apply(lambda x : x.upper())
+            df['Ft'].replace({'DIESEL-ELECTRIC':'DIESEL/ELECTRIC',
+            'UNKNOWN':np.nan,
+            'PETROL-ELECTRIC':'PETROL/ELECTRIC', 'NAN':np.nan}, inplace=True)
+            ''')       
+   
+  st.markdown("# :grey[Suppression des doublons]")
+  with st.expander("Traitement"):
+   st.code( '''
+            print("Nombre de lignes AVANT traitement :", len(df))
+            print("doublons AVANT traitement: ",df.duplicated().sum())
+            df.drop_duplicates(inplace= True)
+            print("doublons APRES traitement: ",df.duplicated().sum())
+            print("Nombre de lignes APRES traitement :", len(df))
+           ''')
+   st.markdown('''
+              Voici le résultat :
+              - Nombre de lignes AVANT traitement : 11463387
+              - doublons AVANT traitement:  11232814
+              - doublons APRES traitement:  0
+              - Nombre de lignes APRES traitement : 230573
+               ''')
+
+  st.markdown("# :grey[Création de la variable CO2_Emission]")
+  with st.expander("Calcul des médianes pour chaque type de carburant à partir de 'Enedc (g/km)' et 'Ewltp (g/km)'"):
+    st.code( '''
+            medians_enedc = df.groupby('Ft')['Enedc (g/km)'].median()
+            medians_ewltp = df.groupby('Ft')['Ewltp (g/km)'].median()
+           ''')
+  with st.expander("Fonction pour calculer CO2_Emission"):
+    st.markdown('Création de la fonction :')
+    st.code( '''
+            def calculate_emissions(row):
+              if not np.isnan(row['Ewltp (g/km)']):
+                return row['Ewltp (g/km)']
+              else:
+                fuel_type = row['Ft']
+                median_enedc = medians_enedc.get(fuel_type, 0)
+                median_ewltp = medians_ewltp.get(fuel_type, 0)
+                adjustment = median_enedc - median_ewltp
+                return row['Enedc (g/km)'] - adjustment
+           ''') 
+    st.markdown('Avec sa mise en application sur les données')
+    st.code('''df['CO2_Emissions'] = df.apply(calculate_emissions, axis=1)''')
+
+    st.markdown('''Suppression des colonnes d'origine''')
+    st.code('''df=df.drop(['Enedc (g/km)', 'Ewltp (g/km)'],axis=1)''')
+
+  st.markdown("# :grey[Traitement des NaN]")
+  with st.expander("Choix du traitement"):
+    st.markdown('''
+                Nous avons calculé à cette étape le nombre de NaN dans les données restantes, voici le résultat :
+                ''')
+    st.code('''
+            print("Somme des valeurs manquantes :",df.isna().sum().sum())
+            Somme des valeurs manquantes : 354"
+            ''')
+    st.markdown("Ce résultat représente 0,15% des données de notre modèle, nous supprimons ces données.")
+                
+    st.code('''
+            df = df.dropna(axis = 0, how = 'any')
+            print('Taille après dropna :', len(df))
+            ''')
+    st.markdown('''Il reste 230336 entrées post nettoyage. L’entraînement sur les différents modèles peut alors être réalisé.''')
+
+  st.markdown("# :grey[Renommage des variables]")
+  with st.expander("Vers plus de clarté"):
+     st.code('''
+             Colname_mapping = {'Tan': 'Type_approval_number',
+                   'T': 'Type',
+                   'Va': 'Variant',
+                   'Mk': 'Make',
+                   'Cn': 'Commercial_name',
+                   'Ct': 'Category_vehicle_type_approved',
+                   'm (kg)': 'Mass_kg',
+                   'W (mm)': 'Wheel_Base_(length_mm)',
+                   'At1 (mm)': 'Track_(width_mm)',
+                   'Ft': 'Fuel_type',
+                   'Fm': 'Fuel_mode',
+                   'ec (cm3)': 'Engine_capacity_cm3',
+                   'ep (KW)': 'Engine_power_KW',
+                   'year': 'Reporting_year'}
+
+                    df.rename(columns=Colname_mapping, inplace=True)
+
+             ''')
 elif page == pages[2]:
   st.header('3 - Modélisation', divider=True)
   
