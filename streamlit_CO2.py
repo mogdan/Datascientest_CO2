@@ -444,81 +444,110 @@ elif page == pages[3]:
     st.write("2. Utiliser des modèles avancés avec optimisation des hyperparamètres pour améliorer la précision.")
     st.write("3. Intégrer des données sur les conditions de circulation (rurale, urbaine, mixte) pour affiner les prédictions.")
  
-  # Chargement des modèles KNN et transformateurs (scaler et PCA)
-  model_knn = joblib.load('model_knn.joblib')
-  scaler = joblib.load('scaler.joblib')
-  pca = joblib.load('pca.joblib')
+
+  import streamlit as st
+  import pandas as pd
+  import numpy as np
+  import joblib
+  from sklearn.ensemble import RandomForestRegressor
+  from sklearn.model_selection import train_test_split
+  from sklearn.preprocessing import StandardScaler, RobustScaler
+  from sklearn.metrics import f1_score
 
 
-  # Titre de l'application
+
+  # Séparation des colonnes numériques et catégorielles
+  col_num = ['Mass_kg', 'Wheel_Base_(length_mm)', 'Track_(width_mm)', 'Engine_capacity_cm3', 'Engine_power_KW', 'Reporting_year']
+  col_cat = ['Type_approval_number', 'Type', 'Variant', 'Make', 'Commercial_name', 'Category_vehicle_type_approved', 'Fuel_mode', 'Fuel_type']
+
+  # Encodage fréquentiel des variables catégorielles
+  def frequency_encoding(df, column):
+    frequency = df[column].value_counts()
+    df[column + '_encoded'] = df[column].map(frequency)
+    return df
+
+  for col in col_cat:
+    df = frequency_encoding(df, col)
+
+  # Supprimer les colonnes catégorielles d'origine
+  df = df.drop(col_cat, axis=1)
+  col_cat_encoded = [col + '_encoded' for col in col_cat]
+
+  # Séparer les données en train/test
+  X = df.drop('CO2_Emissions', axis=1)
+  y = df['CO2_Emissions']
+  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+  # Appliquer le scaling
+  scaler = RobustScaler()
+  X_train[col_num] = scaler.fit_transform(X_train[col_num])
+  X_test[col_num] = scaler.transform(X_test[col_num])
+
+  # Utiliser StandardScaler pour les variables encodées
+  scaler_cat = StandardScaler()
+  X_train[col_cat_encoded] = scaler_cat.fit_transform(X_train[col_cat_encoded])
+  X_test[col_cat_encoded] = scaler_cat.transform(X_test[col_cat_encoded])
+
+  # Entraîner le modèle RandomForest
+  model_rf = RandomForestRegressor()
+  model_rf.fit(X_train, y_train)
+  joblib.dump(model_rf, 'model_rf.joblib')
+
+  # Chargement du modèle
+  model_rf = joblib.load('model_rf.joblib')
+
+  # Interface utilisateur
   st.title("Application de calcul des émissions de CO2")
   st.header("Calculateur d'empreinte carbone pour les véhicules")
 
-  # Choix du pays (simplifié ici avec un seul exemple)
-  emission_factors = {"France": {"transportation": 28.7}}
-  st.subheader("Votre pays")
-  country = st.selectbox("Sélectionnez votre pays", ["France"])
-
-  # Mise en page avec colonnes
+  # Entrées utilisateur
   col1, col2, col3 = st.columns(3)
 
-  # Distance parcourue
   with col1:
-    st.subheader("🚗Distance parcourue (km/j)")
-    daily_distance = st.slider("Distance", 0.0, 100.0, 20.0)
-    yearly_distance = daily_distance * 365  # Conversion en distance annuelle
-    st.info(f"Distance annuelle parcourue : {yearly_distance} km par an")
+    daily_distance = st.slider("🚗 Distance parcourue quotidienne (en km)", 0.0, 100.0, 10.0)
+    yearly_distance = daily_distance * 365
 
-  # Type de carburant
   with col2:
-    st.subheader("⛽Type de carburant")
-    fuel_type = st.selectbox("Carburant", ["PETROL", "DIESEL", "LPG", "PETROL/ELECTRIC", "DIESEL/ELECTRIC", 'NG', 'E85', 'NG-BIOMETHANE'])
+    fuel_type = st.selectbox("⛽ Type de carburant", ["PETROL", "DIESEL", "LPG", "PETROL/ELECTRIC", "DIESEL/ELECTRIC", 'NG', 'E85', 'NG-BIOMETHANE'])
 
-  # Cylindrée du moteur
   with col3:
-    st.subheader( "🏎️💨Taille de la cylindrée (en cm3)")
-    engine_capacity = st.slider("Cylindrée", 500 , 10000, 1000)
+    engine_capacity = st.slider("🏎️ Cylindrée (en L)", 0.0, 10.0, 1.6)
 
-  # Année de construction
-  reporting_year = st.number_input("📅Année de référence pour la prédiction", min_value=2017, max_value=2022, step=1)
+  reporting_year = st.number_input("📅 Année de référence", min_value=2017, max_value=2022, step=1)
 
-  # Encodage fréquentiel pour le type de carburant
-  fuel_type_freq = df['Fuel_type'].value_counts() / len(df)
-  fuel_type_encoded = fuel_type_freq.get(fuel_type, 0)  # Par défaut, valeur de fréquence zéro si absent
+  # Encodage du type de carburant
+  fuel_type_freq = df['Fuel_type_encoded'].value_counts() / len(df)
+  fuel_type_encoded = fuel_type_freq.get(fuel_type, 0)
 
-  # Calcul des émissions
+  # Bouton de calcul
   if st.button("Calculer les émissions de CO2"):
-    # Créer une liste de caractéristiques avec valeurs par défaut pour celles qui manquent
+    # Préparation des données pour la prédiction
     prediction_input = [reporting_year, yearly_distance, engine_capacity, fuel_type_encoded]
+    nombre_caracteristiques_attendues = len(X.columns)
     
-    # Ajouter des valeurs par défaut (0) pour les caractéristiques manquantes
-    # Supposons que le modèle a été entraîné avec 14 caractéristiques
-    nombre_caracteristiques_attendues = 14
     if len(prediction_input) < nombre_caracteristiques_attendues:
         prediction_input += [0] * (nombre_caracteristiques_attendues - len(prediction_input))
 
-    # Restructurer en tableau 2D pour l'entrée du scaler
-    prediction_input = [prediction_input]  # Encapsuler dans une liste pour former un tableau 2D
+    prediction_input = np.array(prediction_input).reshape(1, -1)
+    
+    # Application les transformations pour normaliser les données d'entrée
+    prediction_input[:, :len(col_num)] = scaler.transform(prediction_input[:, :len(col_num)])
+    prediction_input[:, len(col_num):] = scaler_cat.transform(prediction_input[:, len(col_num):])
 
-    # Appliquer les transformations
-    prediction_input_scaled = scaler.transform(prediction_input)  # Maintenant, prediction_input est un tableau 2D
-    prediction_input_pca = pca.transform(prediction_input_scaled)
-
-    # Prédiction des émissions
-    CO2_emission = model_knn.predict(prediction_input_pca)[0]
+    # Prédiction
+    CO2_emission = model_rf.predict(prediction_input)[0]
     CO2_emission = round(CO2_emission, 2)
 
     # Affichage des résultats
     st.header("Résultats")
     st.info(f"Émissions estimées pour {yearly_distance} km par an : {CO2_emission} tonnes de CO2 par an")
+    st.warning("La limite maximale moyenne est de 282,963 tonnes de CO2 par habitant")
+ 
+  
+  
 
-    # Empreinte carbone totale
-    with col3:
-        st.subheader("Empreinte carbone totale")
-        st.info(f"Total des émissions : {CO2_emission} tonnes de CO2 par an")
-
-  # Affichage de la limite moyenne par habitant
-  st.warning("La limite maximale moyenne est de 282,963 tonnes de CO2 par habitant")
+  
+   
 
 
 
