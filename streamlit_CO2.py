@@ -450,7 +450,7 @@ elif page == pages[2]:
     "Score sur test : 0.9762445538965321"
     st.image('streamlit_assets/Feat_Imp_XGBoost.png', use_column_width=True)
 
-    
+
   
 elif page == pages[3]:
   st.header('4 - Conclusion', divider=True)
@@ -484,6 +484,7 @@ elif page == pages[3]:
   from sklearn.model_selection import train_test_split
   from sklearn.preprocessing import StandardScaler, RobustScaler
   from sklearn.metrics import f1_score
+  from xgboost import XGBRegressor
 
   # Chargement du dataset
   df = pd.read_csv('https://raw.githubusercontent.com/mogdan/Datascientest_CO2/refs/heads/main/streamlit_assets/Dataset_Rendu2_cleaned.csv', sep=',')
