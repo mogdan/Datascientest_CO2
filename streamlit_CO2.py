@@ -14,7 +14,8 @@ col1, col2, col3 = st.columns([1, 10, 1])
 col2.title(":blue[Etude sur les émissions de CO₂ des véhicules particuliers]")
 
 # menu gauche de navigation
-st.sidebar.image("https://github.com/mogdan/Datascientest_CO2/blob/main/streamlit_assets/Car_co2_light.png?raw=true", use_column_width=True)
+# st.sidebar.image("https://github.com/mogdan/Datascientest_CO2/blob/main/streamlit_assets/Car_co2_light.png?raw=true", use_column_width=True)
+st.sidebar.image("streamlit_assets/Cine_cars_vintage.jpg", use_column_width=True)
 st.sidebar.title("Sommaire")
 # accès aux pages du site
 pages=["1 - Analyse exploratoire ", "2 - Data Preparation", "3 - Modélisation", "4 - Conclusion"]
