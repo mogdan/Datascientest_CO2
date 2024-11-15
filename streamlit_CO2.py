@@ -427,13 +427,30 @@ elif page == pages[2]:
   st.markdown("Nous cherchons à prédire des valeurs continues d'émissions de CO2 et nous allons donc utiliser des modèles de **régression**")
   st.markdown("Nous avons sélectionné les modèles suivants :")
   with st.expander("Random Forest Regressor"):
+     "Les scores obtenus sont"
+     "Score sur train : 0.9941824620769759"
+     "Score sur test : 0.9879863516148067"
      st.image('streamlit_assets/Feature importance RandomForest.png', use_column_width=True)
 
   with st.expander("Linear Regressor"):
+     "Les scores obtenus sont"
+     "Score sur train : 0.7963421436183908"
+     "Score sur test : 0.7902289500042596"
+     "Comme Scikit-learn ne fournit pas directement de features importances, nous avons appliqué la méthode des coefficients"
      st.image('streamlit_assets/Feature importance RegressionLineaire.png', use_column_width=True)
 
   with st.expander("Gradient Boosting Regressor"):
+    "### GradientBoostingRegressor"
+    "Score sur train : 0.9246557461016944"
+    "Score sur test : 0.9267762036497856"
     st.image('streamlit_assets/Feature importance GradientBoost.png', use_column_width=True)
+
+    "### XGBoost"
+    "Score sur train : 0.9784847196200369"
+    "Score sur test : 0.9762445538965321"
+    st.image('streamlit_assets/Feat_Imp_XGBoost.png', use_column_width=True)
+
+    
   
 elif page == pages[3]:
   st.header('4 - Conclusion', divider=True)
