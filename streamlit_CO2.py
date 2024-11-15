@@ -21,49 +21,49 @@ st.sidebar.title("Sommaire")
 pages=["1 - Analyse exploratoire ", "2 - Data Preparation", "3 - Modélisation", "4 - Conclusion"]
 page=st.sidebar.radio("Aller vers la page :", pages)
 
-# chargement des données et entraînement aux modèles
-# Chargement du dataset
-df = pd.read_csv('https://raw.githubusercontent.com/mogdan/Datascientest_CO2/refs/heads/main/streamlit_assets/Dataset_Rendu2_cleaned.csv', sep=',')
+# # chargement des données et entraînement aux modèles
+# # Chargement du dataset
+# df = pd.read_csv('https://raw.githubusercontent.com/mogdan/Datascientest_CO2/refs/heads/main/streamlit_assets/Dataset_Rendu2_cleaned.csv', sep=',')
 
-# Liste des colonnes catégorielles
-col_cat = ['Type_approval_number', 'Type', 'Variant', 'Make', 'Commercial_name', 'Category_vehicle_type_approved', 'Fuel_mode', 'Fuel_type'] 
+# # Liste des colonnes catégorielles
+# col_cat = ['Type_approval_number', 'Type', 'Variant', 'Make', 'Commercial_name', 'Category_vehicle_type_approved', 'Fuel_mode', 'Fuel_type'] 
 
-# Application de l'encodage fréquentiel pour chaque colonne catégorielle
-for col in col_cat:
-  freq_encoding = df[col].value_counts() / len(df)
-  df[col] = df[col].map(freq_encoding)
+# # Application de l'encodage fréquentiel pour chaque colonne catégorielle
+# for col in col_cat:
+#   freq_encoding = df[col].value_counts() / len(df)
+#   df[col] = df[col].map(freq_encoding)
 
-# Sélection des variables explicatives (X) et de la variable cible (Y)
-Y = df['CO2_Emissions']
-X = df.drop(['CO2_Emissions'], axis=1)
+# # Sélection des variables explicatives (X) et de la variable cible (Y)
+# Y = df['CO2_Emissions']
+# X = df.drop(['CO2_Emissions'], axis=1)
 
-# Standardisation des données
-scaler = StandardScaler()
-X_norm = pd.DataFrame(scaler.fit_transform(X), columns=X.columns)
+# # Standardisation des données
+# scaler = StandardScaler()
+# X_norm = pd.DataFrame(scaler.fit_transform(X), columns=X.columns)
 
-# Clustering avec KMeans (optionnel, pour clustering visuel)
-kmeans_model = KMeans(n_clusters=5, random_state=42)
-X_norm['cluster'] = kmeans_model.fit_predict(X_norm)
+# # Clustering avec KMeans (optionnel, pour clustering visuel)
+# kmeans_model = KMeans(n_clusters=5, random_state=42)
+# X_norm['cluster'] = kmeans_model.fit_predict(X_norm)
 
-# Réduction dimensionnelle avec PCA
-pca = PCA(n_components=2)
-principalComponents = pca.fit_transform(X_norm.drop('cluster', axis=1))
+# # Réduction dimensionnelle avec PCA
+# pca = PCA(n_components=2)
+# principalComponents = pca.fit_transform(X_norm.drop('cluster', axis=1))
 
-# Combinaison PCA et KMeans dans un DataFrame
-X_combined = pd.DataFrame(data=principalComponents, columns=['Component 1', 'Component 2'])
-X_combined['Cluster'] = X_norm['cluster']
+# # Combinaison PCA et KMeans dans un DataFrame
+# X_combined = pd.DataFrame(data=principalComponents, columns=['Component 1', 'Component 2'])
+# X_combined['Cluster'] = X_norm['cluster']
 
-# Division en ensembles d'entraînement et de test
-X_train, X_test, Y_train, Y_test = train_test_split(X_combined[['Component 1', 'Component 2']], Y, test_size=0.2, random_state=42)
+# # Division en ensembles d'entraînement et de test
+# X_train, X_test, Y_train, Y_test = train_test_split(X_combined[['Component 1', 'Component 2']], Y, test_size=0.2, random_state=42)
 
-# Entraînement du modèle KNN
-knn = KNeighborsRegressor(n_neighbors=4)
-knn.fit(X_train, Y_train)
+# # Entraînement du modèle KNN
+# knn = KNeighborsRegressor(n_neighbors=4)
+# knn.fit(X_train, Y_train)
 
-# Sauvegarde du modèle KNN et PCA avec joblib
-joblib.dump(knn, 'model_knn.joblib')
-joblib.dump(scaler, 'scaler.joblib')
-joblib.dump(pca, 'pca.joblib')
+# # Sauvegarde du modèle KNN et PCA avec joblib
+# joblib.dump(knn, 'model_knn.joblib')
+# joblib.dump(scaler, 'scaler.joblib')
+# joblib.dump(pca, 'pca.joblib')
 
 # contenu des pages sélectionnées
 if page == pages[0]: 
@@ -419,8 +419,21 @@ elif page == pages[1]:
                     df.rename(columns=Colname_mapping, inplace=True)
 
              ''')
+
 elif page == pages[2]:
   st.header('3 - Modélisation', divider=True)
+
+  st.markdown("# :grey[Méthodologie]")
+  st.markdown("Nous cherchons à prédire des valeurs continues d'émissions de CO2 et nous allons donc utiliser des modèles de **régression**")
+  st.markdown("Nous avons sélectionné les modèles suivants :")
+  with st.expander("Random Forest Regressor"):
+     st.image('streamlit_assets/Feature importance RandomForest.png', use_column_width=True)
+
+  with st.expander("Linear Regressor"):
+     st.image('streamlit_assets/Feature importance RegressionLineaire.png', use_column_width=True)
+
+  with st.expander("Gradient Boosting Regressor"):
+    st.image('streamlit_assets/Feature importance GradientBoost.png', use_column_width=True)
   
 elif page == pages[3]:
   st.header('4 - Conclusion', divider=True)
@@ -455,7 +468,8 @@ elif page == pages[3]:
   from sklearn.preprocessing import StandardScaler, RobustScaler
   from sklearn.metrics import f1_score
 
-
+  # Chargement du dataset
+  df = pd.read_csv('streamlit_assets/Dataset_Rendu2_cleaned.csv', sep=',')
 
   # Séparation des colonnes numériques et catégorielles
   col_num = ['Mass_kg', 'Wheel_Base_(length_mm)', 'Track_(width_mm)', 'Engine_capacity_cm3', 'Engine_power_KW', 'Reporting_year']
@@ -482,17 +496,17 @@ elif page == pages[3]:
   # Appliquer le scaling
   scaler = RobustScaler()
   X_train[col_num] = scaler.fit_transform(X_train[col_num])
-  X_test[col_num] = scaler.transform(X_test[col_num])
+  # X_test[col_num] = scaler.transform(X_test[col_num])
 
   # Utiliser StandardScaler pour les variables encodées
   scaler_cat = StandardScaler()
   X_train[col_cat_encoded] = scaler_cat.fit_transform(X_train[col_cat_encoded])
-  X_test[col_cat_encoded] = scaler_cat.transform(X_test[col_cat_encoded])
+  # X_test[col_cat_encoded] = scaler_cat.transform(X_test[col_cat_encoded])
 
-  # Entraîner le modèle RandomForest
-  model_rf = RandomForestRegressor()
-  model_rf.fit(X_train, y_train)
-  joblib.dump(model_rf, 'model_rf.joblib')
+  # # Entraîner le modèle RandomForest
+  # model_rf = RandomForestRegressor()
+  # model_rf.fit(X_train, y_train)
+  # joblib.dump(model_rf, 'model_rf.joblib')
 
   # Chargement du modèle
   model_rf = joblib.load('model_rf.joblib')
@@ -505,16 +519,16 @@ elif page == pages[3]:
   col1, col2, col3 = st.columns(3)
 
   with col1:
-    daily_distance = st.slider("🚗 Distance parcourue quotidienne (en km)", 0.0, 100.0, 10.0)
-    yearly_distance = daily_distance * 365
+    weekly_km = st.slider("📏 Distance moyenne hebdomadaire (en km)", 5, 1000, 200, 5)
+    yearly_km = weekly_km * 52
 
   with col2:
     fuel_type = st.selectbox("⛽ Type de carburant", ["PETROL", "DIESEL", "LPG", "PETROL/ELECTRIC", "DIESEL/ELECTRIC", 'NG', 'E85', 'NG-BIOMETHANE'])
 
   with col3:
-    engine_capacity = st.slider("🏎️ Cylindrée (en L)", 0.0, 10.0, 1.6)
+    engine_capacity = st.slider("🏎️ Cylindrée (en litres)", 0.5, 10.0, 1.6, 0.1)
 
-  reporting_year = st.number_input("📅 Année de référence", min_value=2017, max_value=2022, step=1)
+  reporting_year = st.select_slider("📅 Année d'immatriculation du véhicule", range(2017, 2023), 2020)
 
   # Encodage du type de carburant
   fuel_type_freq = df['Fuel_type_encoded'].value_counts() / len(df)
@@ -523,7 +537,7 @@ elif page == pages[3]:
   # Bouton de calcul
   if st.button("Calculer les émissions de CO2"):
     # Préparation des données pour la prédiction
-    prediction_input = [reporting_year, yearly_distance, engine_capacity, fuel_type_encoded]
+    prediction_input = [reporting_year, engine_capacity, fuel_type_encoded]
     nombre_caracteristiques_attendues = len(X.columns)
     
     if len(prediction_input) < nombre_caracteristiques_attendues:
@@ -537,12 +551,13 @@ elif page == pages[3]:
 
     # Prédiction
     CO2_emission = model_rf.predict(prediction_input)[0]
-    CO2_emission = round(CO2_emission, 2)
+    yearly_emission = CO2_emission * yearly_km / 1000000
+    yearly_emission = round(yearly_emission, 2)
 
     # Affichage des résultats
     st.header("Résultats")
-    st.info(f"Émissions estimées pour {yearly_distance} km par an : {CO2_emission} tonnes de CO2 par an")
-    st.warning("La limite maximale moyenne est de 282,963 tonnes de CO2 par habitant")
+    st.info(f"Émissions estimées pour {yearly_km} km par an : {yearly_emission} tonnes de CO2 par an")
+    # st.warning("La limite maximale moyenne est de 282,963 tonnes de CO2 par habitant")
  
   
   
