@@ -425,9 +425,9 @@ elif page == pages[3]:
   st.header('4 - Conclusion', divider=True)
   st.markdown("""
               Pour conclure notre étude sur les émission de CO2 des véhicules, plusieurs points clés émergent:
-              - **Données limitées** : Nous avons exploitéles données disponibles depuis 2015, mais leur recul est restreint.
+              - **Données limitées** : Nous avons exploité les données disponibles depuis 2015, mais leur recul est restreint.
               - **Surreprésentation des véhicules thermiques** : Notre jeu de données est largement composé de vehicules essence et diesel, ce qui reflète la forte présence de ces motorisation sur les routes.
-              - **Variables influentes pour le rejet de CO2** : Le dimensionnement du véhicules( poids, taille de la cylindrée) et les spécifications du moteur se sont avérés plus significatifs pour prédire les émissions de CO2.
+              - **Variables influentes pour le rejet de CO2** : Le dimensionnement du véhicule (poids, taille de la cylindrée) et les spécifications du moteur se sont avérés plus significatifs pour prédire les émissions de CO2.
   """)
   st.subheader("Tableau des Perspectives d'Amélioration")
   # Créer les colonnes pour structurer le tableau
