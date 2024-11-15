@@ -426,31 +426,40 @@ elif page == pages[2]:
   st.markdown("# :grey[Méthodologie]")
   st.markdown("Nous cherchons à prédire des valeurs continues d'émissions de CO2 et nous allons donc utiliser des modèles de **régression**")
   st.markdown("Nous avons sélectionné les modèles suivants :")
-  with st.expander("Random Forest Regressor"):
-     "Les scores obtenus sont"
-     "Score sur train : 0.9941824620769759"
-     "Score sur test : 0.9879863516148067"
-     st.image('streamlit_assets/Feature importance RandomForest.png', use_column_width=True)
-
-  with st.expander("Linear Regressor"):
-     "Les scores obtenus sont"
-     "Score sur train : 0.7963421436183908"
-     "Score sur test : 0.7902289500042596"
-     "Comme Scikit-learn ne fournit pas directement de features importances, nous avons appliqué la méthode des coefficients"
-     st.image('streamlit_assets/Feature importance RegressionLineaire.png', use_column_width=True)
-
-  with st.expander("Gradient Boosting Regressor"):
-    "### GradientBoostingRegressor"
+  with st.expander("Gradient Boosting Regressor", icon='🔲'):
+    "#### GradientBoostingRegressor"
     "Score sur train : 0.9246557461016944"
     "Score sur test : 0.9267762036497856"
-    st.image('streamlit_assets/Feature importance GradientBoost.png', use_column_width=True)
+    "On affiche le graphe de feature importance :"
+    st.image('streamlit_assets/Feature importance GradientBoost.png')
 
-    "### XGBoost"
+    "#### XGBoost"
     "Score sur train : 0.9784847196200369"
     "Score sur test : 0.9762445538965321"
-    st.image('streamlit_assets/Feat_Imp_XGBoost.png', use_column_width=True)
+    "On affiche le graphe de feature importance :"
+    st.image('streamlit_assets/Feat_Imp_XGBoost.png')
+    "Le modèle XGBoost obtient de meilleurs scores mais repose quasi totalement sur la variable Fuel_type"
+    "**Pour les 2 modèles les scores sur le jeu d’entrainement et sur le jeu de test sont très proches ce qui laisse penser qu’il n’y a pas d’over-fitting**"
+    
+  # with st.expander("Linear Regressor", icon='🔲'):
+  #    "Les scores obtenus sont"
+  #    "Score sur train : 0.7963421436183908"
+  #    "Score sur test : 0.7902289500042596"
+  #    "Comme Scikit-learn ne fournit pas directement de features importances, nous avons appliqué la méthode des coefficients"
+  #    st.image('streamlit_assets/Feature importance RegressionLineaire.png')
 
-
+  with st.expander("Random Forest Regressor", icon='🔲'):
+     "Les scores obtenus sont"
+     "- Score sur train : 0.9941824620769759"
+     "- Score sur test : 0.9879863516148067"
+     "On calcule la MSE et RMSE"
+     "- MSE: 8.783648647914177"
+     "- RMSE: 2.9637220935698707"
+     "Ici, cela signifie que le modèle fait, en moyenne, une erreur de prédiction de 2,96 g/km de CO2"
+     "On affiche le graphe de feature importance"
+     st.image('streamlit_assets/Feature importance RandomForest.png')
+     "on peut voir que le type de carburant et la puissance du moteur sont les 2 variables principalement utilisées pour la prédiction (66% à elles 2)"
+     "Le poids et la cylindrée sont les suivantes (environ 25% à elles 2)"
   
 elif page == pages[3]:
   st.header('4 - Conclusion', divider=True)
@@ -475,6 +484,7 @@ elif page == pages[3]:
     st.write("2. Utiliser des modèles avancés avec optimisation des hyperparamètres pour améliorer la précision.")
     st.write("3. Intégrer des données sur les conditions de circulation (rurale, urbaine, mixte) pour affiner les prédictions.")
  
+  st.divider()
 
   import streamlit as st
   import pandas as pd
@@ -570,9 +580,9 @@ elif page == pages[3]:
     # Prédiction
     CO2_emission = model_xgboost.predict(prediction_input)[0]
     yearly_emission = CO2_emission * yearly_km / 1000000
-    yearly_emission = round(yearly_emission, 2)
+    yearly_average = 103 * yearly_km / 1000000
 
     # Affichage des résultats
     st.header("Résultats")
-    st.info(f"Émissions estimées pour {yearly_km} km par an : {yearly_emission} tonnes de CO2 par an")
-    # st.warning("La limite maximale moyenne est de 282,963 tonnes de CO2 par habitant")
+    st.info(f"Émissions estimées pour ce véhicule sur {yearly_km} km annuels : {yearly_emission:.2f} tonnes de CO2")
+    st.warning(f"Emissions moyennes en France pour ce même kilométrage : {yearly_average:.2f} tonnes de CO2 (ref. : août 2022)")
