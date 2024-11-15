@@ -469,7 +469,7 @@ elif page == pages[3]:
   from sklearn.metrics import f1_score
 
   # Chargement du dataset
-  df = pd.read_csv('streamlit_assets/Dataset_Rendu2_cleaned.csv', sep=',')
+  df = pd.read_csv('https://raw.githubusercontent.com/mogdan/Datascientest_CO2/refs/heads/main/streamlit_assets/Dataset_Rendu2_cleaned.csv', sep=',')
 
   # Séparation des colonnes numériques et catégorielles
   col_num = ['Mass_kg', 'Wheel_Base_(length_mm)', 'Track_(width_mm)', 'Engine_capacity_cm3', 'Engine_power_KW', 'Reporting_year']
@@ -509,7 +509,7 @@ elif page == pages[3]:
   # joblib.dump(model_rf, 'model_rf.joblib')
 
   # Chargement du modèle
-  model_rf = joblib.load('model_rf.joblib')
+  model_xgboost = joblib.load('model_XGBoost.joblib')
 
   # Interface utilisateur
   st.title("Application de calcul des émissions de CO2")
@@ -550,7 +550,7 @@ elif page == pages[3]:
     prediction_input[:, len(col_num):] = scaler_cat.transform(prediction_input[:, len(col_num):])
 
     # Prédiction
-    CO2_emission = model_rf.predict(prediction_input)[0]
+    CO2_emission = model_xgboost.predict(prediction_input)[0]
     yearly_emission = CO2_emission * yearly_km / 1000000
     yearly_emission = round(yearly_emission, 2)
 
@@ -558,12 +558,3 @@ elif page == pages[3]:
     st.header("Résultats")
     st.info(f"Émissions estimées pour {yearly_km} km par an : {yearly_emission} tonnes de CO2 par an")
     # st.warning("La limite maximale moyenne est de 282,963 tonnes de CO2 par habitant")
- 
-  
-  
-
-  
-   
-
-
-
