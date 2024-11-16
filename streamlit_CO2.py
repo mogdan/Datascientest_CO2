@@ -72,21 +72,23 @@ if page == pages[0]:
 
   with st.expander("Problématique"):
     problematique = '''
-    L’**accumulation de gaz à effet de serre** dans l’atmosphère est l’une des principales causes de réchauffement climatique. Or, les transports, et principalement la voiture, sont la première source de gaz à effet de serre en France . Il est donc important de connaître l’empreinte carbone de son véhicule afin de pouvoir réduire son impact sur l’environnement. 
+    L’**accumulation de gaz à effet de serre** dans l’atmosphère est l’une des principales causes de réchauffement climatique. 
+    
+    Or, les transports, et principalement la voiture, sont la première source de gaz à effet de serre en France.
+    Selon l'ADEME, les Français affectionne particulièrement ce mode de transport à **77%** malgré l'attractivité des autres modes de transports.
 
-    Parmi les transports privilégiés par les Français, la voiture occupe une place de choix. En effet, selon l’ADEME, les Français se déplacent à :green[**77% en voiture**] contre :
-    -	11% en train ;
-    -	8,8% en transport en commun ;
-    -	1,8% en avion ;
-    -	1,6% en deux roues motorisées.
-
-    La voiture est donc responsable d’une part importante de notre empreinte carbone dans notre quotidien. Face à l’urgence climatique, certains constructeurs ont déjà œuvré ces dix dernières années sur l’amélioration des rendements des moteurs thermiques, l’aérodynamisme et l’allègement des voitures pour limiter l’impact environnemental. 
+    En tant que Français, La voiture est donc responsable d’une part importante de notre empreinte carbone au quotidienn. 
+    
+    Face à l’urgence climatique, certains constructeurs ont déjà œuvré ces dix dernières années sur :
+    - l’amélioration des rendements des moteurs thermiques
+    - l’aérodynamisme
+    - l’allègement des voitures 
 
     Intéressés par cette problématique, nous avons ainsi choisi ce sujet pour mettre à profit nos nouvelles compétences en tant que Data Analyst. 
 
     Les objectifs pour notre équipe sur ce sujet sont les suivants :
-    -	:green[**Consolider les données d’étude**] : Rechercher, analyser et nettoyer les données à notre disposition sur ce périmètre auprès de plusieurs sources de données
-    -	:green[**Concevoir un modèle de prédiction**] :  pour déterminer les émissions de CO2 en fonction des caractéristiques du véhicule
+    -	:green[**Consolider les données d’étude**] : Rechercher, analyser et nettoyer les données à notre disposition sur ce sujet
+    -	:green[**Concevoir un modèle de prédiction**] :  pour déterminer les émissions de CO2 en fonction des caractéristiques des véhicules
   
     '''
     st.markdown(problematique)
@@ -94,21 +96,23 @@ if page == pages[0]:
   with st.expander("Sources des Données"):
       ademe = '''
       **[Source ADEME](https://www.data.gouv.fr/fr/datasets/emissions-de-co2-et-de-polluants-des-vehicules-commercialises-en-france/)**  
-      Données allant de 2002 jusqu’à 2015, uniquement sur les immatriculations françaises, avec un nombre de variables variant chaque année (en incluant les noms des variables aussi). En volume de data, toutes ces années représentent 300K lignes.
+      - Données françaises
+      - Données allant de 2002 jusqu’à 2015
+      - 300K données
       '''
       st.markdown(ademe)
 
       ue = '''
       **[Source UE](https://www.eea.europa.ea/data-and-maps/data/co2-cars-emission-20)**  
-      Données provenant d’une seule et même source de 2010 à 2022 (données finales) et 2023 (données prévisionnelles). Ces données relatent le nombre d’immatriculations faites par pays dans l’UE avec toutes les caractéristiques véhicules complémentaires. Concernant le volume, nous sommes aux alentours de 80 millions de lignes entre 2010 et 2023.
+      - Données européennes (dont données françaises)
+      - Données allant de 2010 à 2022
+      - 80M données
       '''
       st.markdown(ue)
 
-      st.markdown("Pour résumer, ces deux sources de données représentent le flux des nouveaux véhicules entrants sur le marché (soit français, soit européen)")
 
   with st.expander("Autres Sources Disponibles"):
       otherSources = '''
-      Nous avons par ailleurs exploré d’autres sources de données pour venir enrichir les données de base que nous avions : 
       -	Récupération des données Crit’air concernant le marché français
       -	Données de circulation en France et à Paris
       -	Parc (stock) des véhicules en France par an de 2011 à 2023 (Source SDES)
@@ -176,7 +180,7 @@ if page == pages[0]:
 
   with st.expander("Analyses des critères ENEDC / EWLTP"):  
         critere = '''
-        Ayant observé une corrélation suffisante entre ces 2 critères décrivant les émissions de CO2, nous nous sommes penchés sur l’analyse comparative de ces 2 critères :
+        Ce sont 2 indicateurs de mesure des émissions de CO2 : 
         -	**NEDC** signifiant « New European Driving Cycle » ou « Nouveau Cycle de Conduite Européen », c’est une norme d’homologation des véhicules neufs introduite en 1997 en Europe et qui a eu cours jusqu'en septembre 2017. La norme va définir les conditions dans lesquelles un modèle est testé, allant de la vitesse à la température, avec un avantage : tous les véhicules suivent le même protocole.
         -	**WLTP** (Worldwide Harmonized Light Vehicles Test Procedure) pour tout nouveau modèle à partir du 1er septembre 2017. Il concerne tous les véhicules neufs au 1er septembre 2018, et jusqu’aux véhicules en stock homologués NEDC et vendus après le 1er septembre 2019.
         '''
@@ -188,8 +192,8 @@ if page == pages[0]:
         
         Sur les autres années, notre analyse a été la suivante :
         -	En 2017 et 2018, nous avons des données ENEDC et peu voire pas de données EWLTP
-        -	En revanche cette tendance qui s’inverse à partir 2021 où les données ENEDC sont majoritairement absentes.
         -	Durant la période 2019 – 2020, il y a coexistence des données sur ces 2 types de mesures.
+        -	En revanche cette tendance qui s’inverse à partir 2021 où les données ENEDC sont majoritairement absentes.
 
         Pour pousser notre analyse d'un cran supplémentaire, nous nous sommes concentrés sur l'année 2020 où nous avons des données complètes sur les 2 critères. 
         '''
@@ -198,7 +202,9 @@ if page == pages[0]:
         critere2 = '''
         Ce que nous avons voulu mettre en évidence ici est la médiane des émissions par type de carburant et par norme (Enedc puis Ewltp), et la différence par type de carburant.
 
-        :green[**Conclusion** : grâce à ce graphique, npous pouvons confirmer que les émissions calculées avec la norme NEDC sont plus faibles qu’avec la norme WLTP.]
+        :green[**Conclusion** : 
+        - Grâce à ce graphique, npous pouvons confirmer que les émissions calculées avec la norme NEDC sont plus faibles qu’avec la norme WLTP.
+        - Nous pouvons tenter de reconstruire des donnes proches des données EWLTP sur les années où ce référentiel n'était pas en application]
 
         '''
         st.markdown(critere2)
@@ -239,7 +245,7 @@ if page == pages[0]:
   st.markdown("# :grey[Conclusion Analyse Exploratoire]")
 
   with st.expander("Choix des données"):      
-        st.markdown("Au vu de la disparité des données sur les fichiers ADEME et de leur ancienneté, nous avons décidé de nous concentrer sur les :green[**données UE.**] ")
+        st.markdown("Au vu des problématiques vues précédemment sur les données ADEME, nous avons décidé de nous concentrer sur les :green[**données UE.**] ")
   
   with st.expander("Choix de la période d'observation"):      
         period_choice = '''
