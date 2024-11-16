@@ -72,7 +72,7 @@ if page == pages[0]:
 
   with st.expander("Problématique"):
     problematique = '''
-    L’**accumulation de gaz à effet de serre** dans l’atmosphère est l’une des principales causes de réchauffement climatique. 
+    :green[L’**accumulation de gaz à effet de serre**] dans l’atmosphère est l’une des principales causes de réchauffement climatique. 
     
     Or, les transports, et principalement la voiture, sont la première source de gaz à effet de serre en France.
     Selon l'ADEME, les Français affectionne particulièrement ce mode de transport à **77%** malgré l'attractivité des autres modes de transports.
@@ -110,31 +110,7 @@ if page == pages[0]:
       '''
       st.markdown(ue)
 
-
-  with st.expander("Autres Sources Disponibles"):
-      otherSources = '''
-      -	Récupération des données Crit’air concernant le marché français
-      -	Données de circulation en France et à Paris
-      -	Parc (stock) des véhicules en France par an de 2011 à 2023 (Source SDES)
-      -	Emissions de CO2 déduites des consommations réelles de carburant collectées sur le terrain sur les véhicules des particuliers en 2021 (ces données ont été collectées pour permettre une analyse comparative avec les données théoriques constructeurs présentes dans les fichiers ADEME et UE. Source : [Agence Européenne de l’Environnement](https://climate.ec.europa.eu/news-your-voice/news/collecting-real-world-data-co2-emissions-and-fuel-consumption-new-cars-and-vans-2021-03-05_en?prefLang=fr) - EEA)
-      '''
-      st.markdown(otherSources)
-
-  st.markdown("# :grey[Choix des données]")
-  with st.expander("Modalités"):
-        modalites = '''
-        :green[**Cette étape a pour enjeu de nous permettre de sélectionner la source de données la plus pertinente pour démarrer notre étude**]. 
-
-        Durant cette étape, notre approche fut d’apprécier la qualité des données au travers des scopes suivants :
-        -	La cohérence 
-        -	La validité 
-        -	La complétude
-        -	La précision 
-        -	La disponibilité 
-        -	L’actualité 
-
-        '''
-        st.markdown(modalites)
+  st.markdown("# :grey[Exploration des données]")
 
   with st.expander("Données ADEME"):      
         st.markdown("L‘illustration suivante permet de se rendre compte de la qualité macro des données ADEME :")
@@ -164,9 +140,7 @@ if page == pages[0]:
         '''
         st.markdown(ue_choice)
 
-  st.markdown("# :grey[Consolidation des données]")
-
-  with st.expander("Corrélation des données"):      
+  with st.expander("Variables"):      
         st.markdown("Pour commencer le travail exploratoire, nous avons décidé de faire un heatmap pour regarder les corrélations entre les valeurs numériques. Pou_r se faire, nous avons choisi de remplacer les NaN par la moyenne dans chaque variable.")
         st.image("https://github.com/mogdan/Datascientest_CO2/blob/main/streamlit_assets/Heatmap.png?raw=true", use_column_width="auto")
         
@@ -178,7 +152,7 @@ if page == pages[0]:
         '''
         st.markdown(corr_model)
 
-  with st.expander("Analyses des critères ENEDC / EWLTP"):  
+  with st.expander("Critères ENEDC / EWLTP"):  
         critere = '''
         Ce sont 2 indicateurs de mesure des émissions de CO2 : 
         -	**NEDC** signifiant « New European Driving Cycle » ou « Nouveau Cycle de Conduite Européen », c’est une norme d’homologation des véhicules neufs introduite en 1997 en Europe et qui a eu cours jusqu'en septembre 2017. La norme va définir les conditions dans lesquelles un modèle est testé, allant de la vitesse à la température, avec un avantage : tous les véhicules suivent le même protocole.
@@ -190,13 +164,14 @@ if page == pages[0]:
         critere1 = '''
         Grâce à cette analyse, c'est à cette étape que nous avons choisi d'exclure les années 2015 et 2016 dans la suite de notre étude à cause du faible nombre de données.
         
-        Sur les autres années, notre analyse a été la suivante :
+        :green[Sur les autres années, notre analyse a été la suivante :]
         -	En 2017 et 2018, nous avons des données ENEDC et peu voire pas de données EWLTP
         -	Durant la période 2019 – 2020, il y a coexistence des données sur ces 2 types de mesures.
         -	En revanche cette tendance qui s’inverse à partir 2021 où les données ENEDC sont majoritairement absentes.
 
         Pour pousser notre analyse d'un cran supplémentaire, nous nous sommes concentrés sur l'année 2020 où nous avons des données complètes sur les 2 critères. 
         '''
+
         st.markdown(critere1)
         st.image("https://github.com/mogdan/Datascientest_CO2/blob/main/streamlit_assets/Boxplot - comparasion 2020 ENEDC-EWLTP.png?raw=true", use_column_width="auto")
         critere2 = '''
@@ -209,7 +184,7 @@ if page == pages[0]:
         '''
         st.markdown(critere2)
 
-  with st.expander("Analyses de la distribution par type de carburant"):  
+  with st.expander("Approfondissements"):  
         distrib = '''
         Pour continuer notre travail exploratoire, nous avons regardé le nombre de véhicules par type de carburant sur ce jeu de données.
         '''
@@ -217,19 +192,19 @@ if page == pages[0]:
         st.image("https://github.com/mogdan/Datascientest_CO2/blob/main/streamlit_assets/Nb véhicules par type de carburant.png?raw=true", use_column_width="auto")
         
         distrib1 = '''
-        :green[Nous observons ainsi une grande prédominance des voitures Essence et Diesel dans nos données.]
+        :green[**Nous observons ainsi une grande prédominance des voitures Essence et Diesel dans nos données.**]
         
-        Pour compléter ce graphique, il nous a semblé intéressant d’observer l’évolution dans le temps pour chaque carburant :
+        Pour compléter ce graphique, il nous a semblé intéressant d’observer **l’évolution dans le temps pour chaque carburant** :
         '''
         st.markdown(distrib1)
         st.image("https://github.com/mogdan/Datascientest_CO2/blob/main/streamlit_assets/Nb véhicules par type de carburant et par an.png?raw=true", use_column_width="auto")
         distrib2 = '''
         
-        :green[Nous observons une diminution progressive des immatriculations pour les voitures Essence / Diésel ces dernières années et une augmentation progressive des voitures électriques à partir de 2019. Cependant, ces graphiques ne permettent pas d’observer de causes conjoncturelles ou structurelles pour ces tendances.]
+        :green[**Nous observons une diminution progressive des immatriculations pour les voitures Essence / Diesel** ces dernières années et une augmentation progressive des voitures électriques à partir de 2019. 
+        Cependant, ces graphiques ne permettent pas d’observer de causes conjoncturelles ou structurelles pour ces tendances.]
 
         Pour aller plus loin, on s'est intéressé à la distribution par type de carburant et la taille de cylindrée pour voir comment sont répartis les véhicules.
-        Pour cela, nous avons fait un travail préalable sur la variable **ec (cm3)** où nous avons remplacé les NaN par la médiane calculée
-
+        
         '''
         st.markdown(distrib2)
         st.image("https://github.com/mogdan/Datascientest_CO2/blob/main/streamlit_assets/Distribution par type de carburant et taille de cylindrée.png?raw=true", use_column_width="auto")
@@ -242,7 +217,7 @@ if page == pages[0]:
         st.markdown(distrib3)
 
 
-  st.markdown("# :grey[Conclusion Analyse Exploratoire]")
+  st.markdown("# :grey[Conclusion de l'Analyse Exploratoire]")
 
   with st.expander("Choix des données"):      
         st.markdown("Au vu des problématiques vues précédemment sur les données ADEME, nous avons décidé de nous concentrer sur les :green[**données UE.**] ")
@@ -252,21 +227,10 @@ if page == pages[0]:
         :green[**Cette étape a pour enjeu de nous permettre de sélectionner la plage de données sur laquelle va s’appuyer notre modèle.**]
         
         Pour notre étude, nous avons choisi la période « 2017 – 2022 ».
-        -	Notre 1ère intention fut de garder l’année 2015 pour permettre une analyse comparative données UE / ADEME. Cependant le faible volume de données a exclu ce choix par la suite
-        -	Les données relatives aux années 2010 à 2014 ont également été exclues du fait du faible volume de données
-        -	L’année 2023 a également été exclue car elle représente des données non finalisées
+        -	Avant 2017, nous n'avions pas beaucoup de données
+        -	Le faible volume de données 2023 traduit des données non encore intégrées (année en cours)
         '''
         st.markdown(period_choice)
-
-  with st.expander("Choix de la norme pour le calcul des émissions"):      
-        emission_choice = '''
-        Nous avons donc choisi, pour conserver une cohérence temporelle des données d’émissions, de compenser la sous-évaluation des émissions de CO2 par la méthode NEDC en lui ajoutant, pour chaque type de carburant (hors électrique/hydrogène), la médiane de la différence avec les valeurs WLTP mesurée sur 2020.
-        
-        :green[**Dans notre modèle, nous créerons une nouvelle variable nommée ‘Emissions CO2’ qui prendra la valeur de EWLTP quand elle sera présente et la valeur de ENEDC compensée en l’absence de valeur EWLTP.**]
-
-        :green[**Cette variable sera notre variable cible.**]
-        '''
-        st.markdown(emission_choice)
 
 elif page == pages[1]:
   st.header('2 - Nettoyage et sélection des données', divider=True)
