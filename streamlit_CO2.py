@@ -1,69 +1,21 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-from sklearn.preprocessing import StandardScaler
-from sklearn.decomposition import PCA
-from sklearn.cluster import KMeans
-from sklearn.neighbors import KNeighborsRegressor
-from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import RobustScaler
 import joblib
+from xgboost import XGBRegressor
 
 # titre du site
-st.set_page_config(layout='wide', page_icon="https://github.com/mogdan/Datascientest_CO2/blob/main/streamlit_assets/Green_co2_logo2.png?raw=true")
+st.set_page_config(layout='wide', page_icon="streamlit_assets/Green_co2_logo2.png")
 col1, col2, col3 = st.columns([1, 10, 1])
 col2.title(":blue[Etude sur les émissions de CO₂ des véhicules particuliers]")
 
 # menu gauche de navigation
-# st.sidebar.image("https://github.com/mogdan/Datascientest_CO2/blob/main/streamlit_assets/Car_co2_light.png?raw=true", use_column_width=True)
 st.sidebar.image("streamlit_assets/Cine_cars_vintage.jpg", use_column_width=True)
 st.sidebar.title("Sommaire")
 # accès aux pages du site
 pages=["1 - Analyse exploratoire ", "2 - Data Preparation", "3 - Modélisation", "4 - Conclusion"]
 page=st.sidebar.radio("Aller vers la page :", pages)
-
-# # chargement des données et entraînement aux modèles
-# # Chargement du dataset
-# df = pd.read_csv('https://raw.githubusercontent.com/mogdan/Datascientest_CO2/refs/heads/main/streamlit_assets/Dataset_Rendu2_cleaned.csv', sep=',')
-
-# # Liste des colonnes catégorielles
-# col_cat = ['Type_approval_number', 'Type', 'Variant', 'Make', 'Commercial_name', 'Category_vehicle_type_approved', 'Fuel_mode', 'Fuel_type'] 
-
-# # Application de l'encodage fréquentiel pour chaque colonne catégorielle
-# for col in col_cat:
-#   freq_encoding = df[col].value_counts() / len(df)
-#   df[col] = df[col].map(freq_encoding)
-
-# # Sélection des variables explicatives (X) et de la variable cible (Y)
-# Y = df['CO2_Emissions']
-# X = df.drop(['CO2_Emissions'], axis=1)
-
-# # Standardisation des données
-# scaler = StandardScaler()
-# X_norm = pd.DataFrame(scaler.fit_transform(X), columns=X.columns)
-
-# # Clustering avec KMeans (optionnel, pour clustering visuel)
-# kmeans_model = KMeans(n_clusters=5, random_state=42)
-# X_norm['cluster'] = kmeans_model.fit_predict(X_norm)
-
-# # Réduction dimensionnelle avec PCA
-# pca = PCA(n_components=2)
-# principalComponents = pca.fit_transform(X_norm.drop('cluster', axis=1))
-
-# # Combinaison PCA et KMeans dans un DataFrame
-# X_combined = pd.DataFrame(data=principalComponents, columns=['Component 1', 'Component 2'])
-# X_combined['Cluster'] = X_norm['cluster']
-
-# # Division en ensembles d'entraînement et de test
-# X_train, X_test, Y_train, Y_test = train_test_split(X_combined[['Component 1', 'Component 2']], Y, test_size=0.2, random_state=42)
-
-# # Entraînement du modèle KNN
-# knn = KNeighborsRegressor(n_neighbors=4)
-# knn.fit(X_train, Y_train)
-
-# # Sauvegarde du modèle KNN et PCA avec joblib
-# joblib.dump(knn, 'model_knn.joblib')
-# joblib.dump(scaler, 'scaler.joblib')
-# joblib.dump(pca, 'pca.joblib')
 
 # contenu des pages sélectionnées
 if page == pages[0]: 
@@ -397,19 +349,22 @@ elif page == pages[2]:
   st.markdown("Nous cherchons à prédire des valeurs continues d'émissions de CO2 et nous allons donc utiliser des modèles de **régression**")
   st.markdown("Nous avons sélectionné les modèles suivants :")
   with st.expander("Gradient Boosting Regressor", icon='🔲'):
+    st.image('streamlit_assets\GBMvsXGBoost_logo.png', width=500)
     "#### GradientBoostingRegressor"
-    "Score sur train : 0.9246557461016944"
-    "Score sur test : 0.9267762036497856"
+    code = "Score sur train : 0.9246557461016944\n"
+    code += "Score sur test : 0.9267762036497856"
+    st.code(code)
     "On affiche le graphe de feature importance :"
     st.image('streamlit_assets/Feature importance GradientBoost.png')
 
     "#### XGBoost"
-    "Score sur train : 0.9784847196200369"
-    "Score sur test : 0.9762445538965321"
+    code = "Score sur train : 0.9784847196200369\n"
+    code += "Score sur test : 0.9762445538965321"
+    st.code(code)
     "On affiche le graphe de feature importance :"
     st.image('streamlit_assets/Feat_Imp_XGBoost.png')
     "Le modèle XGBoost obtient de meilleurs scores mais repose quasi totalement sur la variable Fuel_type"
-    "**Pour les 2 modèles les scores sur le jeu d’entrainement et sur le jeu de test sont très proches ce qui laisse penser qu’il n’y a pas d’over-fitting**"
+    ":green[**Pour les 2 modèles les scores sur le jeu d’entrainement et sur le jeu de test sont très proches ce qui laisse penser qu’il n’y a pas d’over-fitting**]"
     
   # with st.expander("Linear Regressor", icon='🔲'):
   #    "Les scores obtenus sont"
@@ -419,17 +374,20 @@ elif page == pages[2]:
   #    st.image('streamlit_assets/Feature importance RegressionLineaire.png')
 
   with st.expander("Random Forest Regressor", icon='🔲'):
-     "Les scores obtenus sont"
-     "- Score sur train : 0.9941824620769759"
-     "- Score sur test : 0.9879863516148067"
-     "On calcule la MSE et RMSE"
-     "- MSE: 8.783648647914177"
-     "- RMSE: 2.9637220935698707"
-     "Ici, cela signifie que le modèle fait, en moyenne, une erreur de prédiction de 2,96 g/km de CO2"
-     "On affiche le graphe de feature importance"
-     st.image('streamlit_assets/Feature importance RandomForest.png')
-     "on peut voir que le type de carburant et la puissance du moteur sont les 2 variables principalement utilisées pour la prédiction (66% à elles 2)"
-     "Le poids et la cylindrée sont les suivantes (environ 25% à elles 2)"
+    st.image('streamlit_assets\RandomForest_logo.png', width=500)
+    "Les scores obtenus sont"
+    code = "Score sur train : 0.9941824620769759\n"
+    code += "Score sur test : 0.9879863516148067"
+    st.code(code)
+    "On calcule la MSE et RMSE"
+    code = "MSE: 8.783648647914177\n"
+    code += "RMSE: 2.9637220935698707"
+    st.code(code)
+    "Ici, cela signifie que le modèle fait, en moyenne, une erreur de prédiction de 2,96 g/km de CO2"
+    "On affiche le graphe de feature importance"
+    st.image('streamlit_assets/Feature importance RandomForest.png')
+    "On peut voir que le type de carburant et la puissance du moteur sont les 2 variables principalement utilisées pour la prédiction (66% à elles 2)"
+    "Le poids et la cylindrée sont les suivantes (environ 25% à elles 2)"
   
 elif page == pages[3]:
   st.header('4 - Conclusion', divider=True)
@@ -456,55 +414,27 @@ elif page == pages[3]:
  
   st.divider()
 
-  import streamlit as st
-  import pandas as pd
-  import numpy as np
-  import joblib
-  from sklearn.ensemble import RandomForestRegressor
-  from sklearn.model_selection import train_test_split
-  from sklearn.preprocessing import StandardScaler, RobustScaler
-  from sklearn.metrics import f1_score
-  from xgboost import XGBRegressor
+  # fonction de chargement du dataset avec mise en cache pendant 1 heure
+  @st.cache_data(ttl=3600)
+  def load_co2_data():
+    data = pd.read_csv('streamlit_assets/Dataset_Rendu2_cleaned.csv', sep=',')
+    return data
+  
+  df = load_co2_data()
 
-  # Chargement du dataset
-  df = pd.read_csv('https://raw.githubusercontent.com/mogdan/Datascientest_CO2/refs/heads/main/streamlit_assets/Dataset_Rendu2_cleaned.csv', sep=',')
+  # liste des colonnes dans l'ordre d'entrainement du modèle
+  col_list = ['Type_approval_number', 'Type', 'Variant', 'Make', 'Commercial_name',
+       'Category_vehicle_type_approved', 'Mass_kg', 'Wheel_Base_(length_mm)',
+       'Track_(width_mm)', 'Fuel_type', 'Fuel_mode', 'Engine_capacity_cm3',
+       'Engine_power_KW', 'Reporting_year', 'CO2_Emissions']
 
   # Séparation des colonnes numériques et catégorielles
   col_num = ['Mass_kg', 'Wheel_Base_(length_mm)', 'Track_(width_mm)', 'Engine_capacity_cm3', 'Engine_power_KW', 'Reporting_year']
-  col_cat = ['Type_approval_number', 'Type', 'Variant', 'Make', 'Commercial_name', 'Category_vehicle_type_approved', 'Fuel_mode', 'Fuel_type']
+  # col_cat = ['Type_approval_number', 'Type', 'Variant', 'Make', 'Commercial_name', 'Category_vehicle_type_approved', 'Fuel_mode', 'Fuel_type']
 
-  # Encodage fréquentiel des variables catégorielles
-  def frequency_encoding(df, column):
-    frequency = df[column].value_counts()
-    df[column + '_encoded'] = df[column].map(frequency)
-    return df
-
-  for col in col_cat:
-    df = frequency_encoding(df, col)
-
-  # Supprimer les colonnes catégorielles d'origine
-  df = df.drop(col_cat, axis=1)
-  col_cat_encoded = [col + '_encoded' for col in col_cat]
-
-  # Séparer les données en train/test
-  X = df.drop('CO2_Emissions', axis=1)
-  y = df['CO2_Emissions']
-  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-  # Appliquer le scaling
+  # Initialiser le scaler
   scaler = RobustScaler()
-  X_train[col_num] = scaler.fit_transform(X_train[col_num])
-  # X_test[col_num] = scaler.transform(X_test[col_num])
-
-  # Utiliser StandardScaler pour les variables encodées
-  scaler_cat = StandardScaler()
-  X_train[col_cat_encoded] = scaler_cat.fit_transform(X_train[col_cat_encoded])
-  # X_test[col_cat_encoded] = scaler_cat.transform(X_test[col_cat_encoded])
-
-  # # Entraîner le modèle RandomForest
-  # model_rf = RandomForestRegressor()
-  # model_rf.fit(X_train, y_train)
-  # joblib.dump(model_rf, 'model_rf.joblib')
+  df[col_num] = scaler.fit(df[col_num])
 
   # Chargement du modèle
   model_xgboost = joblib.load('model_XGBoost.joblib')
@@ -526,26 +456,35 @@ elif page == pages[3]:
   with col3:
     engine_capacity = st.slider("🏎️ Cylindrée (en litres)", 0.5, 10.0, 1.6, 0.1)
 
-  reporting_year = st.select_slider("📅 Année d'immatriculation du véhicule", range(2017, 2023), 2020)
-
-  # Encodage du type de carburant
-  fuel_type_freq = df['Fuel_type_encoded'].value_counts() / len(df)
-  fuel_type_encoded = fuel_type_freq.get(fuel_type, 0)
+  reporting_year = st.select_slider("📅 Année d'immatriculation du véhicule", range(2017, 2023), 2022)
 
   # Bouton de calcul
   if st.button("Calculer les émissions de CO2"):
-    # Préparation des données pour la prédiction
-    prediction_input = [reporting_year, engine_capacity, fuel_type_encoded]
-    nombre_caracteristiques_attendues = len(X.columns)
-    
-    if len(prediction_input) < nombre_caracteristiques_attendues:
-        prediction_input += [0] * (nombre_caracteristiques_attendues - len(prediction_input))
+    # Encodage des données numériques pour la prédiction
+    num_mask = [0] * len(col_num)
+    num_mask[col_num.index('Engine_capacity_cm3')] = engine_capacity
+    num_mask[col_num.index('Reporting_year')] = reporting_year
+    encoded_params = scaler.transform(np.array(num_mask).reshape(1, -1))
+    # display for debugging
+    # st.dataframe(encoded_params)
+    engine_capacity_encoded = encoded_params[0,col_num.index('Engine_capacity_cm3')]
+    reporting_year_encoded = encoded_params[0,col_num.index('Reporting_year')]
+
+    # Encodage du type de carburant
+    fuel_type_freq = df['Fuel_type'].value_counts() / len(df)
+    fuel_type_encoded = fuel_type_freq.get(fuel_type, 0)
+
+    # Construction du vecteur d'entrée : la valeur encodée 0 est utilisée par défaut pour les autres paramètres
+    nombre_caracteristiques_attendues = len(col_list) - 1
+    prediction_input = [0] * nombre_caracteristiques_attendues
+    prediction_input[col_list.index('Fuel_type')] = fuel_type_encoded
+    prediction_input[col_list.index('Engine_capacity_cm3')] = engine_capacity_encoded
+    prediction_input[col_list.index('Reporting_year')] = reporting_year_encoded
 
     prediction_input = np.array(prediction_input).reshape(1, -1)
     
-    # Application les transformations pour normaliser les données d'entrée
-    prediction_input[:, :len(col_num)] = scaler.transform(prediction_input[:, :len(col_num)])
-    prediction_input[:, len(col_num):] = scaler_cat.transform(prediction_input[:, len(col_num):])
+    # display prediction input for debugging
+    # st.dataframe(prediction_input.reshape(1, -1))
 
     # Prédiction
     CO2_emission = model_xgboost.predict(prediction_input)[0]
