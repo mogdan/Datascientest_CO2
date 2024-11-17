@@ -349,7 +349,7 @@ elif page == pages[2]:
   st.markdown("Nous cherchons à prédire des valeurs continues d'émissions de CO2 et nous allons donc utiliser des modèles de **régression**")
   st.markdown("Nous avons sélectionné les modèles suivants :")
   with st.expander("Gradient Boosting Regressor", icon='🔲'):
-    st.image('streamlit_assets\GBMvsXGBoost_logo.png', width=500)
+    st.image('streamlit_assets/GBMvsXGBoost_logo.png', width=500)
     "#### GradientBoostingRegressor"
     code = "Score sur train : 0.9246557461016944\n"
     code += "Score sur test : 0.9267762036497856"
@@ -374,7 +374,7 @@ elif page == pages[2]:
   #    st.image('streamlit_assets/Feature importance RegressionLineaire.png')
 
   with st.expander("Random Forest Regressor", icon='🔲'):
-    st.image('streamlit_assets\RandomForest_logo.png', width=500)
+    st.image('streamlit_assets/RandomForest_logo.png', width=500)
     "Les scores obtenus sont"
     code = "Score sur train : 0.9941824620769759\n"
     code += "Score sur test : 0.9879863516148067"
